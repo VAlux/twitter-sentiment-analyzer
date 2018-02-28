@@ -1,9 +1,11 @@
-package com.alvo.twitterinjestor.processing;
+package com.alvo.twitteringestor.processing;
 
-import com.alvo.twitterinjestor.model.Tweet;
+import com.alvo.twitteringestor.model.Tweet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
 
+@Service
 public class TweetSentimentAnalyzeProcessingService implements TweetProcessingService<Tweet, Tweet> {
   private static final Logger LOGGER = LoggerFactory.getLogger(TweetSentimentAnalyzeProcessingService.class);
 

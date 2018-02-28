@@ -1,4 +1,4 @@
-package com.alvo.twitterinjestor.model;
+package com.alvo.twitteringestor.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;

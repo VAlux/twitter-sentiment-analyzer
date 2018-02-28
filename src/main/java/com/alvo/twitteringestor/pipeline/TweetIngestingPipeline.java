@@ -1,15 +1,13 @@
-package com.alvo.twitterinjestor.pipeline;
+package com.alvo.twitteringestor.pipeline;
 
-import com.alvo.twitterinjestor.model.Tweet;
-import com.alvo.twitterinjestor.processing.TweetProcessingService;
-import com.alvo.twitterinjestor.producing.TweetProducingService;
-import com.alvo.twitterinjestor.streaming.TweetStreamService;
+import com.alvo.twitteringestor.model.Tweet;
+import com.alvo.twitteringestor.processing.TweetProcessingService;
+import com.alvo.twitteringestor.producing.TweetProducingService;
+import com.alvo.twitteringestor.streaming.TweetStreamService;
 import com.twitter.hbc.core.endpoint.Endpoint;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import twitter4j.TwitterException;
-
-import javax.inject.Inject;
 
 public class TweetIngestingPipeline<
     Streaming extends TweetStreamService<Tweet, ? extends Endpoint>,
@@ -22,7 +20,6 @@ public class TweetIngestingPipeline<
   private final Processing processingService;
   private final Producing producingService;
 
-  @Inject
   public TweetIngestingPipeline(Streaming streamingService,
                                 Processing processingService,
                                 Producing producingService) {

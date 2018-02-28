@@ -1,9 +1,9 @@
-package com.alvo.twitterinjestor.controller;
+package com.alvo.twitteringestor.controller;
 
-import com.alvo.twitterinjestor.pipeline.TweetIngestingPipeline;
-import com.alvo.twitterinjestor.processing.TweetSentimentAnalyzeProcessingService;
-import com.alvo.twitterinjestor.producing.TweetAMQPProducingService;
-import com.alvo.twitterinjestor.streaming.TweetSamplingStreamService;
+import com.alvo.twitteringestor.pipeline.TweetIngestingPipeline;
+import com.alvo.twitteringestor.processing.TweetSentimentAnalyzeProcessingService;
+import com.alvo.twitteringestor.producing.TweetAMQPProducingService;
+import com.alvo.twitteringestor.streaming.TweetSamplingStreamService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
@@ -21,10 +21,12 @@ import java.util.concurrent.ForkJoinTask;
 public class TweetStreamController {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(TweetStreamController.class);
+  private static final String STREAMING_STOPPED_MESSAGE = "Streaming stopped";
+  private static final String STREAMING_STARTED_MESSAGE = "Streaming started";
 
   private final TweetIngestingPipeline<TweetSamplingStreamService,
-                                         TweetSentimentAnalyzeProcessingService,
-                                         TweetAMQPProducingService> pipeline;
+                                       TweetSentimentAnalyzeProcessingService,
+                                       TweetAMQPProducingService> pipeline;
 
   @Inject
   public TweetStreamController(TweetIngestingPipeline<TweetSamplingStreamService,
@@ -36,15 +38,17 @@ public class TweetStreamController {
   @GetMapping(value = "/start", produces = MediaType.APPLICATION_JSON_VALUE)
   @ResponseBody
   public ResponseEntity<Object> startStreaming() {
-    ForkJoinTask<?> streamingTask = ForkJoinTask.adapt(pipeline::invokePipeline );
+    LOGGER.info(STREAMING_STARTED_MESSAGE);
+    ForkJoinTask<?> streamingTask = ForkJoinTask.adapt(pipeline::invokePipeline);
     ForkJoinPool.commonPool().submit(streamingTask);
-    return ResponseEntity.ok(PojoUtil.toJson("streaming started"));
+    return ResponseEntity.ok(PojoUtil.toJson(STREAMING_STARTED_MESSAGE));
   }
 
   @GetMapping(value = "/stop", produces = MediaType.APPLICATION_JSON_VALUE)
   @ResponseBody
   public ResponseEntity<Object> stopStreaming() {
+    LOGGER.info(STREAMING_STOPPED_MESSAGE);
     pipeline.stopPipeline();
-    return ResponseEntity.ok(PojoUtil.toJson("Streaming stopped"));
+    return ResponseEntity.ok(PojoUtil.toJson(STREAMING_STOPPED_MESSAGE));
   }
 }

@@ -1,4 +1,4 @@
-package com.alvo.twitterinjestor.streaming;
+package com.alvo.twitteringestor.streaming;
 
 import com.twitter.hbc.core.endpoint.Endpoint;
 import twitter4j.TwitterException;
