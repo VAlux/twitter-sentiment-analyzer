@@ -15,6 +15,10 @@ public class Tweet {
   @JsonIgnore
   private SentimentLevel sentimentLevel;
 
+  public Tweet() {
+    this.setSentimentLevel(SentimentLevel.UNKNOWN);
+  }
+
   public String getText() {
     return text;
   }

@@ -6,16 +6,18 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import javax.inject.Inject;
 import java.io.IOException;
 import java.util.Optional;
 
 @Service
 public final class TweetTranslatorService implements TranslatorService<String, Tweet> {
   private static final Logger LOGGER = LoggerFactory.getLogger(TweetTranslatorService.class);
-  private static final ObjectMapper mapper;
+  private final ObjectMapper mapper;
 
-  static {
-    mapper = new ObjectMapper();
+  @Inject
+  public TweetTranslatorService(ObjectMapper mapper) {
+    this.mapper = mapper;
   }
 
   @Override
