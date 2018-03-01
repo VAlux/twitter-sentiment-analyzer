@@ -4,6 +4,7 @@ import com.alvo.twitteringestor.model.Tweet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.stereotype.Service;
 
@@ -17,6 +18,9 @@ public class TweetAMQPProducingService implements TweetProducingService<Tweet> {
   private final RabbitTemplate rabbitTemplate;
   private final ConfigurableApplicationContext context;
 
+  @Value("${rabbitmq.queue.name}")
+  private String queueName;
+
   @Inject
   public TweetAMQPProducingService(RabbitTemplate rabbitTemplate, ConfigurableApplicationContext context) {
     this.rabbitTemplate = rabbitTemplate;
@@ -25,12 +29,7 @@ public class TweetAMQPProducingService implements TweetProducingService<Tweet> {
 
   @Override
   public void produce(Tweet tweet) {
-    LOGGER.info("Tweet {}pushed to the queue", tweet);
-    rabbitTemplate.convertAndSend(tweet);
-  }
-
-  @PreDestroy
-  public void destroy() {
-    context.close();
+    LOGGER.debug("Tweet {} pushed to the queue", tweet);
+    rabbitTemplate.convertAndSend(queueName, tweet);
   }
 }
