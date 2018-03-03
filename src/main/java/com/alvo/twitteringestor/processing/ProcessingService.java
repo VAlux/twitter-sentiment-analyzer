@@ -1,5 +1,5 @@
 package com.alvo.twitteringestor.processing;
 
-public interface TweetProcessingService<SourceType, ProcessedType> {
+public interface ProcessingService<SourceType, ProcessedType> {
   ProcessedType process(SourceType source);
 }

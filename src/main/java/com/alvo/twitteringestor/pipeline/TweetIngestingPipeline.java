@@ -1,18 +1,18 @@
 package com.alvo.twitteringestor.pipeline;
 
 import com.alvo.twitteringestor.model.Tweet;
-import com.alvo.twitteringestor.processing.TweetProcessingService;
-import com.alvo.twitteringestor.producing.TweetProducingService;
-import com.alvo.twitteringestor.streaming.TweetStreamService;
+import com.alvo.twitteringestor.processing.ProcessingService;
+import com.alvo.twitteringestor.producing.ProducingService;
+import com.alvo.twitteringestor.streaming.StreamService;
 import com.twitter.hbc.core.endpoint.Endpoint;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import twitter4j.TwitterException;
 
 public class TweetIngestingPipeline<
-    Streaming extends TweetStreamService<Tweet, ? extends Endpoint>,
-    Processing extends TweetProcessingService<Tweet, Tweet>,
-    Producing extends TweetProducingService<Tweet>> {
+    Streaming extends StreamService<Tweet, ? extends Endpoint>,
+    Processing extends ProcessingService<Tweet, Tweet>,
+    Producing extends ProducingService<Tweet>> implements Pipeline {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(TweetIngestingPipeline.class);
 
@@ -28,6 +28,7 @@ public class TweetIngestingPipeline<
     this.producingService = producingService;
   }
 
+  @Override
   public void invokePipeline() {
     streamingService.start();
     while (streamingService.isStreaming()) {
@@ -42,7 +43,20 @@ public class TweetIngestingPipeline<
     }
   }
 
+  @Override
   public void stopPipeline() {
     streamingService.stop();
+  }
+
+  public Streaming getStreamingService() {
+    return streamingService;
+  }
+
+  public Processing getProcessingService() {
+    return processingService;
+  }
+
+  public Producing getProducingService() {
+    return producingService;
   }
 }

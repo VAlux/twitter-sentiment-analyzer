@@ -1,5 +1,5 @@
 package com.alvo.twitteringestor.producing;
 
-public interface TweetProducingService<T> {
+public interface ProducingService<T> {
   void produce(T source);
 }

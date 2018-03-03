@@ -2,18 +2,18 @@ package com.alvo.twitteringestor.controller;
 
 import com.alvo.twitteringestor.model.StreamingStatus;
 import com.alvo.twitteringestor.pipeline.TweetIngestingPipeline;
-import com.alvo.twitteringestor.processing.TweetSentimentAnalyzeProcessingService;
-import com.alvo.twitteringestor.producing.TweetAMQPProducingService;
-import com.alvo.twitteringestor.streaming.TweetSamplingStreamService;
+import com.alvo.twitteringestor.processing.SentimentAnalyzeProcessingService;
+import com.alvo.twitteringestor.producing.AMQPProducingService;
+import com.alvo.twitteringestor.streaming.SamplingStreamService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.inject.Inject;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.ForkJoinTask;
 
@@ -24,14 +24,14 @@ public class TweetStreamController {
   private static final String STREAMING_STOPPED_MESSAGE = "status:\"streaming stopped\"";
   private static final String STREAMING_STARTED_MESSAGE = "status:\"streaming started\"";
 
-  private final TweetIngestingPipeline<TweetSamplingStreamService,
-                                       TweetSentimentAnalyzeProcessingService,
-                                       TweetAMQPProducingService> pipeline;
+  private final TweetIngestingPipeline<SamplingStreamService,
+      SentimentAnalyzeProcessingService,
+      AMQPProducingService> pipeline;
 
-  @Inject
-  public TweetStreamController(TweetIngestingPipeline<TweetSamplingStreamService,
-                                                      TweetSentimentAnalyzeProcessingService,
-                                                      TweetAMQPProducingService> pipeline) {
+  @Autowired
+  public TweetStreamController(TweetIngestingPipeline<SamplingStreamService,
+      SentimentAnalyzeProcessingService,
+      AMQPProducingService> pipeline) {
     this.pipeline = pipeline;
   }
 

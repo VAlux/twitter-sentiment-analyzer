@@ -32,10 +32,6 @@
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-social-twitter</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
         <dependency>
@@ -56,16 +52,11 @@
         </dependency>
 
         <dependency>
-            <groupId>com.dkanejs.maven.plugins</groupId>
-            <artifactId>docker-compose-maven-plugin</artifactId>
-            <version>1.0.1</version>
-        </dependency>
-
-        <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
         </dependency>
+
         <dependency>
             <groupId>edu.stanford.nlp</groupId>
             <artifactId>stanford-corenlp</artifactId>
@@ -96,33 +87,6 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
-            </plugin>
-            <plugin>
-                <groupId>com.dkanejs.maven.plugins</groupId>
-                <artifactId>docker-compose-maven-plugin</artifactId>
-                <version>1.0.1</version>
-                <executions>
-                    <execution>
-                        <id>up</id>
-                        <goals>
-                            <goal>up</goal>
-                        </goals>
-                        <configuration>
-                            <composeFile>${project.basedir}/docker-compose.yml</composeFile>
-                            <detachedMode>true</detachedMode>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>down</id>
-                        <goals>
-                            <goal>down</goal>
-                        </goals>
-                        <configuration>
-                            <composeFile>${project.basedir}/docker-compose.yml</composeFile>
-                            <removeVolumes>true</removeVolumes>
-                        </configuration>
-                    </execution>
-                </executions>
             </plugin>
         </plugins>
     </build>

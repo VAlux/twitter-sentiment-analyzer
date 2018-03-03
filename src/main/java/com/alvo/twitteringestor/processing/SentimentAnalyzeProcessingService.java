@@ -10,16 +10,15 @@ import edu.stanford.nlp.sentiment.SentimentCoreAnnotations;
 import edu.stanford.nlp.trees.Tree;
 import edu.stanford.nlp.util.CoreMap;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.inject.Inject;
-
 @Service
-public class TweetSentimentAnalyzeProcessingService implements TweetProcessingService<Tweet, Tweet> {
+public class SentimentAnalyzeProcessingService implements ProcessingService<Tweet, Tweet> {
   private final StanfordCoreNLP pipeline;
 
-  @Inject
-  public TweetSentimentAnalyzeProcessingService(StanfordCoreNLP pipeline) {
+  @Autowired
+  public SentimentAnalyzeProcessingService(StanfordCoreNLP pipeline) {
     this.pipeline = pipeline;
   }
 

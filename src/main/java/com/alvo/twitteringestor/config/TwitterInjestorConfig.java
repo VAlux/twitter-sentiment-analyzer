@@ -1,9 +1,10 @@
 package com.alvo.twitteringestor.config;
 
+import com.alvo.twitteringestor.pipeline.Pipeline;
 import com.alvo.twitteringestor.pipeline.TweetIngestingPipeline;
-import com.alvo.twitteringestor.processing.TweetSentimentAnalyzeProcessingService;
-import com.alvo.twitteringestor.producing.TweetAMQPProducingService;
-import com.alvo.twitteringestor.streaming.TweetSamplingStreamService;
+import com.alvo.twitteringestor.processing.SentimentAnalyzeProcessingService;
+import com.alvo.twitteringestor.producing.AMQPProducingService;
+import com.alvo.twitteringestor.streaming.SamplingStreamService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.twitter.hbc.httpclient.auth.Authentication;
 import com.twitter.hbc.httpclient.auth.OAuth1;
@@ -39,18 +40,16 @@ public class TwitterInjestorConfig {
 
   @Bean
   @Qualifier("sampling_pipeline")
-  public TweetIngestingPipeline<TweetSamplingStreamService,
-                                TweetSentimentAnalyzeProcessingService,
-                                TweetAMQPProducingService> samplingPipeline(TweetSamplingStreamService sampler,
-                                                                            TweetSentimentAnalyzeProcessingService processing,
-                                                                            TweetAMQPProducingService producing) {
+  public Pipeline samplingPipeline(SamplingStreamService sampler,
+                                   SentimentAnalyzeProcessingService processing,
+                                   AMQPProducingService producing) {
     return new TweetIngestingPipeline<>(sampler, processing, producing);
   }
 
   @Bean
-  public StanfordCoreNLP pipeline() {
+  public StanfordCoreNLP coreNLPPipeline() {
     Properties properties = new Properties();
-    properties.setProperty("annotators", "tokenize, ssplit, pos, lemma, parse, sentiment");
+    properties.setProperty("annotators", "tokenize, ssplit, pos, lemma, parse, sentiment"); // TODO: move to config
     return new StanfordCoreNLP(properties);
   }
 }
