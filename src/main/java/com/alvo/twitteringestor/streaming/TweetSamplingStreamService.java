@@ -15,7 +15,7 @@ import org.springframework.stereotype.Service;
 import twitter4j.TwitterException;
 
 @Service
-public class SamplingStreamService implements StreamService<Tweet, StatusesSampleEndpoint> {
+public class TweetSamplingStreamService implements StreamService<Tweet, StatusesSampleEndpoint> {
 
   private final Client streamingClient;
   private final TweetStreamContainer container;
@@ -23,9 +23,9 @@ public class SamplingStreamService implements StreamService<Tweet, StatusesSampl
   private final Authentication authentication;
 
   @Autowired
-  public SamplingStreamService(TweetStreamContainer streamContainer,
-                               TweetTranslatorService translator,
-                               Authentication authentication) {
+  public TweetSamplingStreamService(TweetStreamContainer streamContainer,
+                                    TweetTranslatorService translator,
+                                    Authentication authentication) {
     this.translator = translator;
     this.container = streamContainer;
     this.authentication = authentication;

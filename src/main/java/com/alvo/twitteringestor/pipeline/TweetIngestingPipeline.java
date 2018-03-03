@@ -47,14 +47,17 @@ public class TweetIngestingPipeline<
     streamingService.stop();
   }
 
+  @Override
   public Streaming getStreamingService() {
     return streamingService;
   }
 
+  @Override
   public Processing getProcessingService() {
     return processingService;
   }
 
+  @Override
   public Producing getProducingService() {
     return producingService;
   }

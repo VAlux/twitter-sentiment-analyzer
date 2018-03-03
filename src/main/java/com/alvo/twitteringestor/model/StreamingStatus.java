@@ -5,7 +5,9 @@ import com.fasterxml.jackson.databind.node.TextNode;
 
 public enum StreamingStatus {
   STARTED("Streaming started!"),
-  STOPPED("Streaming stopped!");
+  STOPPED("Streaming stopped!"),
+  FILTER_APPLIED("Filter applied"),
+  FILTER_FAILED("Filter failed");
 
   private final String status;
 

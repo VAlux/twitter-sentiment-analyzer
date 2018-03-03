@@ -12,7 +12,9 @@ import com.twitter.hbc.core.processor.StringDelimitedProcessor;
 import com.twitter.hbc.httpclient.auth.Authentication;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import twitter4j.TwitterException;
+
+import java.util.Arrays;
+import java.util.Collections;
 
 @Service
 public class TweetFilteringStreamService implements StreamService<Tweet, StatusesFilterEndpoint> {
@@ -33,11 +35,16 @@ public class TweetFilteringStreamService implements StreamService<Tweet, Statuse
   }
 
   private Client createClient() {
+    StatusesFilterEndpoint endpoint = new StatusesFilterEndpoint();
+    endpoint.languages(Collections.singletonList("en"));
+    endpoint.trackTerms(Collections.singletonList("twitter"));
+    endpoint.followings(Arrays.asList(1234L, 566788L));
+
     return new ClientBuilder()
         .name("hbc_filter_client")
         .hosts(new HttpHosts(Constants.STREAM_HOST))
         .authentication(authentication)
-        .endpoint(new StatusesFilterEndpoint())
+        .endpoint(endpoint)
         .processor(new StringDelimitedProcessor(container.getMessageQueue()))
         .eventMessageQueue(container.getEventQueue())
         .build();

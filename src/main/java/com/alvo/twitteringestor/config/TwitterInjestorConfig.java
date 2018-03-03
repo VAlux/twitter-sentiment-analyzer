@@ -4,7 +4,8 @@ import com.alvo.twitteringestor.pipeline.Pipeline;
 import com.alvo.twitteringestor.pipeline.TweetIngestingPipeline;
 import com.alvo.twitteringestor.processing.SentimentAnalyzeProcessingService;
 import com.alvo.twitteringestor.producing.AMQPProducingService;
-import com.alvo.twitteringestor.streaming.SamplingStreamService;
+import com.alvo.twitteringestor.streaming.TweetSamplingStreamService;
+import com.alvo.twitteringestor.streaming.TweetFilteringStreamService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.twitter.hbc.httpclient.auth.Authentication;
 import com.twitter.hbc.httpclient.auth.OAuth1;
@@ -40,10 +41,18 @@ public class TwitterInjestorConfig {
 
   @Bean
   @Qualifier("sampling_pipeline")
-  public Pipeline samplingPipeline(SamplingStreamService sampler,
+  public Pipeline samplingPipeline(TweetSamplingStreamService streaming,
                                    SentimentAnalyzeProcessingService processing,
                                    AMQPProducingService producing) {
-    return new TweetIngestingPipeline<>(sampler, processing, producing);
+    return new TweetIngestingPipeline<>(streaming, processing, producing);
+  }
+
+  @Bean
+  @Qualifier("filtering_pipeline")
+  public Pipeline filteringPipeline(TweetFilteringStreamService steaming,
+                                   SentimentAnalyzeProcessingService processing,
+                                   AMQPProducingService producing) {
+    return new TweetIngestingPipeline<>(steaming, processing, producing);
   }
 
   @Bean
