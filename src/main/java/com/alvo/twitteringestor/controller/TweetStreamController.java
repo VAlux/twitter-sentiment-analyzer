@@ -21,8 +21,6 @@ import java.util.concurrent.ForkJoinTask;
 public class TweetStreamController {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(TweetStreamController.class);
-  private static final String STREAMING_STOPPED_MESSAGE = "status:\"streaming stopped\"";
-  private static final String STREAMING_STARTED_MESSAGE = "status:\"streaming started\"";
 
   private final TweetIngestingPipeline<SamplingStreamService,
       SentimentAnalyzeProcessingService,
@@ -38,17 +36,17 @@ public class TweetStreamController {
   @GetMapping(value = "/start", produces = MediaType.APPLICATION_JSON_VALUE)
   @ResponseBody
   public ResponseEntity<Object> startStreaming() {
-    LOGGER.info(STREAMING_STARTED_MESSAGE);
+    LOGGER.info(StreamingStatus.STARTED.toString());
     ForkJoinTask<?> streamingTask = ForkJoinTask.adapt(pipeline::invokePipeline);
     ForkJoinPool.commonPool().submit(streamingTask);
-    return ResponseEntity.ok(StreamingStatus.STARTED.asJson());
+    return ResponseEntity.ok(StreamingStatus.STARTED.toJson());
   }
 
   @GetMapping(value = "/stop", produces = MediaType.APPLICATION_JSON_VALUE)
   @ResponseBody
   public ResponseEntity<Object> stopStreaming() {
-    LOGGER.info(STREAMING_STOPPED_MESSAGE);
+    LOGGER.info(StreamingStatus.STOPPED.toString());
     pipeline.stopPipeline();
-    return ResponseEntity.ok(StreamingStatus.STOPPED.asJson());
+    return ResponseEntity.ok(StreamingStatus.STOPPED.toJson());
   }
 }

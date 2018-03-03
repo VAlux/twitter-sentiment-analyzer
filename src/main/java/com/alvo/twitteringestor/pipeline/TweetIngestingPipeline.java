@@ -7,7 +7,6 @@ import com.alvo.twitteringestor.streaming.StreamService;
 import com.twitter.hbc.core.endpoint.Endpoint;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import twitter4j.TwitterException;
 
 public class TweetIngestingPipeline<
     Streaming extends StreamService<Tweet, ? extends Endpoint>,
@@ -37,7 +36,7 @@ public class TweetIngestingPipeline<
         Tweet processed = processingService.process(tweet);
         producingService.produce(processed);
         LOGGER.info(tweet.toString());
-      } catch (TwitterException | InterruptedException e) {
+      } catch (InterruptedException e) {
         LOGGER.error("Pipeline operation error: {}", e.getMessage());
       }
     }

@@ -13,7 +13,7 @@ public enum StreamingStatus {
     this.status = status;
   }
 
-  public JsonNode asJson() {
+  public JsonNode toJson() {
     return new TextNode(status);
   }
 
