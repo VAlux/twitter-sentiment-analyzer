@@ -1,11 +1,9 @@
 rabbitmq:
-  image: rabbitmq:management
+  image: rabbitmq-sentiment
   ports:
     - "5672:5672"
     - "15672:15672"
+    - "15674:15674"
   labels:
     NAME: "rabbitmq"
   tty: true
-  volumes:
-    - ./rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf:ro
-    - ./definitions.json:/etc/rabbitmq/definitions.json:ro
