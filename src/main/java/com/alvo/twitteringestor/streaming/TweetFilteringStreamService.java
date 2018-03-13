@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 
 @Service
 public class TweetFilteringStreamService implements StreamService<Tweet, StatusesFilterEndpoint> {
@@ -35,10 +36,7 @@ public class TweetFilteringStreamService implements StreamService<Tweet, Statuse
   }
 
   private Client createClient() {
-    StatusesFilterEndpoint endpoint = new StatusesFilterEndpoint();
-    endpoint.languages(Collections.singletonList("en"));
-    endpoint.trackTerms(Collections.singletonList("twitter"));
-    endpoint.followings(Arrays.asList(1234L, 566788L));
+    StatusesFilterEndpoint endpoint = createDefaultEndpoint();
 
     return new ClientBuilder()
         .name("hbc_filter_client")
@@ -48,6 +46,24 @@ public class TweetFilteringStreamService implements StreamService<Tweet, Statuse
         .processor(new StringDelimitedProcessor(container.getMessageQueue()))
         .eventMessageQueue(container.getEventQueue())
         .build();
+  }
+
+  private StatusesFilterEndpoint createEndpoint(List<String> languages,
+                                                List<String> terms,
+                                                List<Long> followings) {
+    StatusesFilterEndpoint endpoint = new StatusesFilterEndpoint();
+    endpoint.languages(languages);
+    endpoint.trackTerms(terms);
+    endpoint.followings(followings);
+    return endpoint;
+  }
+
+  private StatusesFilterEndpoint createDefaultEndpoint() {
+    StatusesFilterEndpoint endpoint = new StatusesFilterEndpoint();
+    endpoint.languages(Collections.singletonList("en"));
+    endpoint.trackTerms(Collections.singletonList("twitter"));
+    endpoint.followings(Arrays.asList(1234L, 566788L));
+    return endpoint;
   }
 
   @Override
