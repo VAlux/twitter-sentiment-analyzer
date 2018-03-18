@@ -32,10 +32,9 @@ public class TweetIngestingPipeline<
     streamingService.start();
     while (streamingService.isStreaming()) {
       try {
-        Tweet tweet = streamingService.take();
-        Tweet processed = processingService.process(tweet);
-        producingService.produce(processed);
-        LOGGER.info(tweet.toString());
+        streamingService.take()
+            .map(processingService::process)
+            .ifPresent(producingService::produce);
       } catch (InterruptedException e) {
         LOGGER.error("Pipeline operation error: {}", e.getMessage());
       }

@@ -2,7 +2,7 @@ package com.alvo.twitteringestor.streaming;
 
 import com.alvo.twitteringestor.model.Tweet;
 import com.alvo.twitteringestor.model.TweetStreamContainer;
-import com.alvo.twitteringestor.translator.TweetTranslatorService;
+import com.alvo.twitteringestor.translator.TranslatorService;
 import com.twitter.hbc.ClientBuilder;
 import com.twitter.hbc.core.Client;
 import com.twitter.hbc.core.Constants;
@@ -12,27 +12,33 @@ import com.twitter.hbc.core.processor.StringDelimitedProcessor;
 import com.twitter.hbc.httpclient.auth.Authentication;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import twitter4j.TwitterException;
+
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
+import java.util.Optional;
 
 @Service
-public class TweetSamplingStreamService implements StreamService<Tweet, StatusesSampleEndpoint> {
+public class TweetSamplingStreamService
+    extends AbstractHBCStreamService
+    implements StreamService<Tweet, StatusesSampleEndpoint> {
 
-  private final Client streamingClient;
-  private final TweetStreamContainer container;
-  private final TweetTranslatorService translator;
-  private final Authentication authentication;
+  private final TranslatorService<String, Tweet> translator;
 
   @Autowired
   public TweetSamplingStreamService(TweetStreamContainer streamContainer,
-                                    TweetTranslatorService translator,
+                                    TranslatorService<String, Tweet> translator,
                                     Authentication authentication) {
+    super(authentication, streamContainer);
     this.translator = translator;
-    this.container = streamContainer;
-    this.authentication = authentication;
-    this.streamingClient = createClient();
   }
 
-  private Client createClient() {
+  @PostConstruct
+  public void connect() {
+    streamingClient.connect();
+  }
+
+  @Override
+  protected Client createClient() {
     return new ClientBuilder()
         .name("hbc_sampler_client")
         .hosts(new HttpHosts(Constants.STREAM_HOST))
@@ -45,19 +51,24 @@ public class TweetSamplingStreamService implements StreamService<Tweet, Statuses
 
   @Override
   public void start() {
-    streamingClient.connect();
+    this.isActive = true;
   }
 
   @Override
   public void stop() {
-    streamingClient.stop();
+    this.isActive = false;
   }
 
   @Override
-  public Tweet take() throws InterruptedException {
-    return translator
-        .from(container.getMessageQueue().take())
-        .orElseThrow(() -> new InterruptedException("Error parsing tweet"));
+  public Optional<Tweet> take() throws InterruptedException {
+    if (isActive) {
+      return Optional.of(
+          translator
+              .from(container.getMessageQueue().take())
+              .orElseThrow(() -> new InterruptedException("Error parsing tweet")));
+    } else {
+      return Optional.empty();
+    }
   }
 
   @Override
@@ -67,6 +78,11 @@ public class TweetSamplingStreamService implements StreamService<Tweet, Statuses
 
   @Override
   public boolean isStreaming() {
-    return !streamingClient.isDone();
+    return isActive;
+  }
+
+  @PreDestroy
+  public void preDestroy() {
+    this.streamingClient.stop();
   }
 }

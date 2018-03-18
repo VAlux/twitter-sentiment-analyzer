@@ -2,7 +2,7 @@ package com.alvo.twitteringestor.streaming;
 
 import com.alvo.twitteringestor.model.Tweet;
 import com.alvo.twitteringestor.model.TweetStreamContainer;
-import com.alvo.twitteringestor.translator.TweetTranslatorService;
+import com.alvo.twitteringestor.translator.TranslatorService;
 import com.twitter.hbc.ClientBuilder;
 import com.twitter.hbc.core.Client;
 import com.twitter.hbc.core.Constants;
@@ -13,29 +13,34 @@ import com.twitter.hbc.httpclient.auth.Authentication;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.List;
+import java.util.Optional;
 
 @Service
-public class TweetFilteringStreamService implements StreamService<Tweet, StatusesFilterEndpoint> {
+public class TweetFilteringStreamService
+    extends AbstractHBCStreamService
+    implements StreamService<Tweet, StatusesFilterEndpoint> {
 
-  private final Client streamingClient;
-  private final TweetStreamContainer container;
-  private final TweetTranslatorService translator;
-  private final Authentication authentication;
+  private final TranslatorService<String, Tweet> translator;
 
   @Autowired
-  public TweetFilteringStreamService(TweetTranslatorService translator,
+  public TweetFilteringStreamService(TranslatorService<String, Tweet> translator,
                                      TweetStreamContainer container,
                                      Authentication authentication) {
-    this.container = container;
+    super(authentication, container);
     this.translator = translator;
-    this.authentication = authentication;
-    this.streamingClient = createClient();
   }
 
-  private Client createClient() {
+  @PostConstruct
+  public void connect() {
+    streamingClient.connect();
+  }
+
+  @Override
+  protected Client createClient() {
     StatusesFilterEndpoint endpoint = createDefaultEndpoint();
 
     return new ClientBuilder()
@@ -48,16 +53,6 @@ public class TweetFilteringStreamService implements StreamService<Tweet, Statuse
         .build();
   }
 
-  private StatusesFilterEndpoint createEndpoint(List<String> languages,
-                                                List<String> terms,
-                                                List<Long> followings) {
-    StatusesFilterEndpoint endpoint = new StatusesFilterEndpoint();
-    endpoint.languages(languages);
-    endpoint.trackTerms(terms);
-    endpoint.followings(followings);
-    return endpoint;
-  }
-
   private StatusesFilterEndpoint createDefaultEndpoint() {
     StatusesFilterEndpoint endpoint = new StatusesFilterEndpoint();
     endpoint.languages(Collections.singletonList("en"));
@@ -68,19 +63,24 @@ public class TweetFilteringStreamService implements StreamService<Tweet, Statuse
 
   @Override
   public void start() {
-    streamingClient.connect();
+    this.isActive = true;
   }
 
   @Override
   public void stop() {
-    streamingClient.stop();
+    this.isActive = false;
   }
 
   @Override
-  public Tweet take() throws InterruptedException {
-    return translator
-        .from(container.getMessageQueue().take())
-        .orElseThrow(() -> new InterruptedException("Error parsing tweet"));
+  public Optional<Tweet> take() throws InterruptedException {
+    if (isActive) {
+      return Optional.of(
+          translator
+              .from(container.getMessageQueue().take())
+              .orElseThrow(() -> new InterruptedException("Error parsing tweet")));
+    } else {
+      return Optional.empty();
+    }
   }
 
   @Override
@@ -90,6 +90,11 @@ public class TweetFilteringStreamService implements StreamService<Tweet, Statuse
 
   @Override
   public boolean isStreaming() {
-    return !streamingClient.isDone();
+    return isActive;
+  }
+
+  @PreDestroy
+  public void preDestroy() {
+    this.streamingClient.stop();
   }
 }

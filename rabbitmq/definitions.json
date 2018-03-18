@@ -33,14 +33,5 @@
       "auto_delete": false,
       "arguments": {}
     }
-  ],
-  "rabbitmq_web_stomp": [
-    {
-      "tcp_config": [
-        {
-          "port": 12345
-        }
-      ]
-    }
   ]
 }

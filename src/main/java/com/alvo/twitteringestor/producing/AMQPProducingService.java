@@ -24,7 +24,7 @@ public class AMQPProducingService implements ProducingService<Tweet> {
 
   @Override
   public void produce(Tweet tweet) {
-    LOGGER.debug("Tweet {} pushed to the queue", tweet);
+    LOGGER.info("Tweet {} pushed to the queue", tweet);
     rabbitTemplate.convertAndSend(queueName, tweet);
   }
 }
