@@ -1,9 +1,23 @@
-rabbitmq:
-  image: rabbitmq-sentiment
-  ports:
-    - "5672:5672"
-    - "15672:15672"
-    - "15674:15674"
-  labels:
-    NAME: "rabbitmq"
-  tty: true
+version: '2'
+
+services:
+  rabbitmq:
+    image: rabbitmq-sentiment
+    hostname: rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+      - "15674:15674"
+    labels:
+      NAME: "rabbitmq"
+    tty: true
+  sentiment-analyzer:
+    image: springio/twitter-injestor
+    hostname: sentiment-analyzer
+    ports:
+      - "8080:8080"
+    links:
+      - rabbitmq
+    labels:
+      NAME: "twitter-sentiment-analyzer"
+    tty: true
