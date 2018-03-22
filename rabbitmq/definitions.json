@@ -29,7 +29,8 @@
     {
       "name": "sentiment-analyzed-tweets",
       "vhost": "/",
-      "durable": false,
+      "durable": true,
+      "exclusive": false,
       "auto_delete": false,
       "arguments": {}
     }

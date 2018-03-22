@@ -1,6 +1,5 @@
 package com.alvo.twitteringestor.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -12,7 +11,6 @@ public class Tweet {
   @JsonProperty("text")
   private String text;
 
-  @JsonIgnore
   private SentimentLevel sentimentLevel;
 
   public Tweet() {

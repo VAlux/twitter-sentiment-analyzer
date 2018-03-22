@@ -1,5 +1,7 @@
 package com.alvo.twitteringestor.model;
 
+import com.fasterxml.jackson.annotation.JsonValue;
+
 import java.util.Arrays;
 
 public enum SentimentLevel {
@@ -17,6 +19,7 @@ public enum SentimentLevel {
     this.level = level;
   }
 
+  @JsonValue
   public int getLevel() {
     return level;
   }
