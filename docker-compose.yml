@@ -3,6 +3,7 @@ version: '2'
 services:
   rabbitmq:
     image: rabbitmq-sentiment
+    container_name: "rabbitmq_sentiment"
     hostname: rabbitmq
     ports:
       - "5672:5672"
@@ -11,13 +12,43 @@ services:
     labels:
       NAME: "rabbitmq"
     tty: true
+
+  mongodb:
+    image: mongo:latest
+    container_name: "mongodb"
+    environment:
+      - MONGO_DATA_DIR=/data/db
+      - MONGO_LOG_DIR=/dev/null
+      - MONGODB_USER="user"
+      - MONGODB_PASS="mongo"
+    volumes:
+      - ./data/db:/data/db
+    ports:
+      - 27017:27017
+    command: mongod --smallfiles
+    tty: true
+
   sentiment-analyzer:
     image: springio/twitter-injestor
     hostname: sentiment-analyzer
+    container_name: "sentiment_analyzer"
     ports:
       - "8080:8080"
     links:
       - rabbitmq
     labels:
       NAME: "twitter-sentiment-analyzer"
+    tty: true
+
+  sentiment-analyzer-dataproxy:
+    image: twitter-sentiment-analyzer-dataproxy
+    hostname: twitter-sentiment-analyzer-dataproxy
+    container_name: "sentiment_analyzer_dataproxy"
+    ports:
+      - "8081:8081"
+    links:
+      - rabbitmq
+      - mongodb
+    labels:
+      NAME: "twitter-sentiment-analyzer-dataproxy"
     tty: true
