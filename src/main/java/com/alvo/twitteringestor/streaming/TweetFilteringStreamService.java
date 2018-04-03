@@ -2,7 +2,7 @@ package com.alvo.twitteringestor.streaming;
 
 import com.alvo.twitteringestor.model.Tweet;
 import com.alvo.twitteringestor.model.TweetStreamContainer;
-import com.alvo.twitteringestor.translator.TranslatorService;
+import com.alvo.twitteringestor.translator.Translator;
 import com.twitter.hbc.ClientBuilder;
 import com.twitter.hbc.core.Client;
 import com.twitter.hbc.core.Constants;
@@ -11,7 +11,6 @@ import com.twitter.hbc.core.endpoint.StatusesFilterEndpoint;
 import com.twitter.hbc.core.processor.StringDelimitedProcessor;
 import com.twitter.hbc.httpclient.auth.Authentication;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
@@ -27,15 +26,13 @@ public class TweetFilteringStreamService
     extends AbstractHBCStreamService
     implements StreamService<Tweet, StatusesFilterEndpoint> {
 
-  private final TranslatorService<String, Tweet> translator;
+  private final Translator<String, Tweet> translator;
 
-  @Value("${rabbitmq.filter.default.followings}")
-  private String defaultFollowings;
-  @Value("${rabbitmq.filter.default.terms}")
-  private String deffultTerms;
+  private static final String DEFAULT_FOLLOWINGS = "1234;566788";
+  private static final String DEFAULT_TERMS = "twitter";
 
   @Autowired
-  public TweetFilteringStreamService(TranslatorService<String, Tweet> translator,
+  public TweetFilteringStreamService(Translator<String, Tweet> translator,
                                      TweetStreamContainer container,
                                      Authentication authentication) {
     super(authentication, container);
@@ -64,10 +61,10 @@ public class TweetFilteringStreamService
   private StatusesFilterEndpoint createDefaultEndpoint() {
     StatusesFilterEndpoint endpoint = new StatusesFilterEndpoint();
     endpoint.languages(Collections.singletonList("en"));
-    endpoint.trackTerms(Collections.singletonList(deffultTerms));
+    endpoint.trackTerms(Collections.singletonList(DEFAULT_TERMS));
 
     List<Long> followings =
-        Arrays.stream(defaultFollowings.split(";"))
+        Arrays.stream(DEFAULT_FOLLOWINGS.split(";"))
             .map(Long::valueOf)
             .collect(Collectors.toList());
 

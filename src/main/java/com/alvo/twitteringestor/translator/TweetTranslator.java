@@ -5,18 +5,18 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.util.Optional;
 
-@Service
-public final class TweetTranslatorService implements TranslatorService<String, Tweet> {
-  private static final Logger LOGGER = LoggerFactory.getLogger(TweetTranslatorService.class);
+@Component
+public final class TweetTranslator implements Translator<String, Tweet> {
+  private static final Logger LOGGER = LoggerFactory.getLogger(TweetTranslator.class);
   private final ObjectMapper mapper;
 
   @Autowired
-  public TweetTranslatorService(ObjectMapper mapper) {
+  public TweetTranslator(ObjectMapper mapper) {
     this.mapper = mapper;
   }
 

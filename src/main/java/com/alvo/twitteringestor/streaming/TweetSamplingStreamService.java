@@ -2,7 +2,7 @@ package com.alvo.twitteringestor.streaming;
 
 import com.alvo.twitteringestor.model.Tweet;
 import com.alvo.twitteringestor.model.TweetStreamContainer;
-import com.alvo.twitteringestor.translator.TranslatorService;
+import com.alvo.twitteringestor.translator.Translator;
 import com.twitter.hbc.ClientBuilder;
 import com.twitter.hbc.core.Client;
 import com.twitter.hbc.core.Constants;
@@ -22,11 +22,11 @@ public class TweetSamplingStreamService
     extends AbstractHBCStreamService
     implements StreamService<Tweet, StatusesSampleEndpoint> {
 
-  private final TranslatorService<String, Tweet> translator;
+  private final Translator<String, Tweet> translator;
 
   @Autowired
   public TweetSamplingStreamService(TweetStreamContainer streamContainer,
-                                    TranslatorService<String, Tweet> translator,
+                                    Translator<String, Tweet> translator,
                                     Authentication authentication) {
     super(authentication, streamContainer);
     this.translator = translator;
