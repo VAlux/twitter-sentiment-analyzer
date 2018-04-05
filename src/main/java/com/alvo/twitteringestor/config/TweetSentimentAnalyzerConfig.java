@@ -10,6 +10,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.twitter.hbc.httpclient.auth.Authentication;
 import com.twitter.hbc.httpclient.auth.OAuth1;
 import edu.stanford.nlp.pipeline.StanfordCoreNLP;
+import org.springframework.amqp.core.Binding;
+import org.springframework.amqp.core.BindingBuilder;
+import org.springframework.amqp.core.FanoutExchange;
+import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -23,7 +27,7 @@ import org.springframework.context.annotation.Configuration;
 import java.util.Properties;
 
 @Configuration
-public class TwitterIngestorConfig {
+public class TweetSentimentAnalyzerConfig {
 
   @Value("${social.twitter.appId}")
   private String consumerKey;
@@ -43,6 +47,12 @@ public class TwitterIngestorConfig {
   private String rabbitmqUsername;
   @Value("${spring.rabbitmq.password}")
   private String rabbitmqPassword;
+  @Value("${rabbitmq.realtime.queue.name}")
+  private String realtimeQueueName; 
+  @Value("${rabbitmq.dataproxy.queue.name}")
+  private String dataproxyQueueName;
+  @Value("${rabbitmq.fanout.exchange.name}")
+  private String fanoutExchangeName;
 
   @Bean
   public Authentication hbcAuthentication() {
@@ -52,6 +62,31 @@ public class TwitterIngestorConfig {
   @Bean
   public ObjectMapper objectMapper() {
     return new ObjectMapper();
+  }
+  
+  @Bean
+  public Queue realtimeSentimentAnalyzedTweetsQueue() {
+    return new Queue(realtimeQueueName);
+  }
+  
+  @Bean
+  public Queue dataproxySentimentAnalyzedTweetsQueue() {
+    return new Queue(dataproxyQueueName);
+  }
+
+  @Bean
+  public FanoutExchange fanoutExchange() {
+    return new FanoutExchange(fanoutExchangeName);
+  }
+  
+  @Bean
+  public Binding dataproxyBinding(FanoutExchange fanoutExchange) {
+    return BindingBuilder.bind(dataproxySentimentAnalyzedTweetsQueue()).to(fanoutExchange);
+  }
+
+  @Bean
+  Binding realtimeBinding(FanoutExchange fanoutExchange) {
+    return BindingBuilder.bind(realtimeSentimentAnalyzedTweetsQueue()).to(fanoutExchange);
   }
 
   @Bean
