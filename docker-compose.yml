@@ -2,7 +2,7 @@ version: '2'
 
 services:
   rabbitmq:
-    image: rabbitmq-sentiment
+    image: alvo/twitter-sentiment-analyzer-rabbitmq
     container_name: "rabbitmq_sentiment"
     hostname: rabbitmq
     ports:
@@ -30,7 +30,7 @@ services:
     tty: true
 
   sentiment-analyzer:
-    image: twitter-sentiment-analyzer
+    image: alvo/twitter-sentiment-analyzer
     hostname: sentiment-analyzer
     container_name: "sentiment_analyzer"
     ports:
@@ -42,7 +42,7 @@ services:
     tty: true
 
   sentiment-analyzer-dataproxy:
-    image: twitter-sentiment-analyzer-dataproxy
+    image: alvo/twitter-sentiment-analyzer-dataproxy
     hostname: twitter-sentiment-analyzer-dataproxy
     container_name: "sentiment_analyzer_dataproxy"
     ports:
