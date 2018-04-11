@@ -53,3 +53,16 @@ services:
     labels:
       NAME: "twitter-sentiment-analyzer-dataproxy"
     tty: true
+
+  sentiment-analyzer-frontend:
+    image: alvo/twitter-sentiment-analyzer-frontend
+    hostname: twitter-sentiment-analyzer-frontend
+    container_name: "sentiment-analyzer-frontend"
+    ports:
+      - 80:80
+    links:
+      - rabbitmq
+      - sentiment-analyzer-dataproxy
+    labels:
+      NAME: "twitter-sentiment-analyzer-frontend"
+    tty: true
