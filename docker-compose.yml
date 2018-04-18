@@ -6,9 +6,9 @@ services:
     container_name: "rabbitmq_sentiment"
     hostname: rabbitmq
     ports:
-      - "5672:5672"
-      - "15672:15672"
-      - "15674:15674"
+      - 5672:5672
+      - 15672:15672
+      - 15674:15674
     labels:
       NAME: "rabbitmq"
     tty: true
@@ -34,7 +34,7 @@ services:
     hostname: sentiment-analyzer
     container_name: "sentiment_analyzer"
     ports:
-      - "8080:8080"
+      - 8080:8080
     links:
       - rabbitmq
     labels:
@@ -46,7 +46,7 @@ services:
     hostname: twitter-sentiment-analyzer-dataproxy
     container_name: "sentiment_analyzer_dataproxy"
     ports:
-      - "8081:8081"
+      - 8081:8081
     links:
       - rabbitmq
       - mongodb
@@ -63,6 +63,7 @@ services:
     links:
       - rabbitmq
       - sentiment-analyzer-dataproxy
+      - sentiment-analyzer
     labels:
       NAME: "twitter-sentiment-analyzer-frontend"
     tty: true
