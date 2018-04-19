@@ -29,6 +29,7 @@ public class TweetStreamController {
   @GetMapping(value = "/start", produces = MediaType.APPLICATION_JSON_VALUE)
   @ResponseBody
   public ResponseEntity<Object> startStreaming() {
+    //TODO:replace with custom FJ pool and check for already running threads.
     LOGGER.info(StreamingStatus.STARTED.toString());
     ForkJoinTask<?> streamingTask = ForkJoinTask.adapt(pipeline::invokePipeline);
     ForkJoinPool.commonPool().submit(streamingTask);
