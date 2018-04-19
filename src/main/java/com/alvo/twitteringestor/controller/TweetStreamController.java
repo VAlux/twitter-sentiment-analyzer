@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.ForkJoinTask;
 
@@ -23,17 +23,29 @@ import java.util.concurrent.ForkJoinTask;
 public class TweetStreamController {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(TweetStreamController.class);
+  private static final int STREAMING_POOL_PARALLELISM_FACTOR = 1;
 
   private Pipeline pipeline;
+
+  private final ForkJoinPool streamingPool;
+
+  public TweetStreamController() {
+    streamingPool = new ForkJoinPool(STREAMING_POOL_PARALLELISM_FACTOR);
+  }
 
   @GetMapping(value = "/start", produces = MediaType.APPLICATION_JSON_VALUE)
   @ResponseBody
   public ResponseEntity<Object> startStreaming() {
-    //TODO:replace with custom FJ pool and check for already running threads.
-    LOGGER.info(StreamingStatus.STARTED.toString());
-    ForkJoinTask<?> streamingTask = ForkJoinTask.adapt(pipeline::invokePipeline);
-    ForkJoinPool.commonPool().submit(streamingTask);
-    return ResponseEntity.ok(StreamingStatus.STARTED.toJson());
+    if (streamingPool.getRunningThreadCount() <= 0) {
+      LOGGER.info(StreamingStatus.STARTED.toString());
+      ForkJoinTask<?> streamingTask = ForkJoinTask.adapt(pipeline::invokePipeline);
+      streamingPool.submit(streamingTask);
+      return ResponseEntity.ok(StreamingStatus.STARTED.toJson());
+    } else {
+      return ResponseEntity
+          .badRequest()
+          .body("Streaming already running, consider stopping current job");
+    }
   }
 
   @GetMapping(value = "/stop", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -46,12 +58,12 @@ public class TweetStreamController {
 
   @GetMapping(value = "/filter", produces = MediaType.APPLICATION_JSON_VALUE)
   @ResponseBody
-  public ResponseEntity<Object> streamFilter(@RequestParam String term) {
-    LOGGER.info("{} :: {}", StreamingStatus.FILTER_APPLIED.toString(), term);
+  public ResponseEntity<Object> streamFilter(@RequestParam List<String> terms) {
+    LOGGER.info("{} :: {}", StreamingStatus.FILTER_APPLIED.toString(), terms);
     final StreamService streamingService = pipeline.getStreamingService();
     if (streamingService instanceof TweetFilteringStreamService) {
       TweetFilteringStreamService filteringService = ((TweetFilteringStreamService) streamingService);
-      filteringService.getEndpoint().trackTerms(Collections.singletonList(term));
+      filteringService.getEndpoint().trackTerms(terms);
       return ResponseEntity.ok(StreamingStatus.FILTER_APPLIED.toJson());
     }
     return ResponseEntity.ok(StreamingStatus.FILTER_FAILED.toJson());
