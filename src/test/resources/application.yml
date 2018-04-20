@@ -1,0 +1,25 @@
+filter-languages: en
+
+twitter:
+  appId: 4h8mE0W0Tp4xBsglMswYj95Me
+  appSecret: eDNWDgbMc0RDKjcGvadeOE8vtEWzLutIOeFtUb5vIsJBWlYXhY
+  tokenId: 253582654-wXDD46rzT0BVkhUJX6RiQ72Rs3rsUaqQP3EtQKyr
+  tokenSecret: y9mheLBvf4vzxTdqqIs6b2lJ5vwu4IOQA55ykRhNst1Ve
+  message-queue-capacity: 1000
+  event-queue-capacity: 1000
+  corenlp-annotations:
+      - tokenize
+      - ssplit
+      - pos
+      - lemma
+      - parse
+      - sentiment
+
+rabbitmq:
+  password: me
+  username: me
+  port: 5672
+  host: rabbitmq
+  dataproxy-queue-name: sentiment-analyzed-tweets-dataproxy
+  realtime-queue-name: sentiment-analyzed-tweets-realtime
+  fanout-exchange-name: sentiment-analyzed-fanout
