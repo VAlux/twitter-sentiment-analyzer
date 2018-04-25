@@ -1,2 +1,2 @@
 #!/usr/bin/env bash
-mvn clean install dockerfile:build
+mvn clean install -DskipTests dockerfile:build
