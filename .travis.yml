@@ -13,10 +13,6 @@ jdk: oraclejdk8
 
 install: true
 
-before_install:
-  - docker version
-  - docker info
-
 cache:
   directories:
   - "$HOME/.cache"
