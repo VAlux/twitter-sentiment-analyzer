@@ -11,15 +11,8 @@ language: java
 
 jdk: oraclejdk8
 
-install: true
-
 cache:
   directories:
   - "$HOME/.cache"
 
-deploy:
-  provider: script
-  script: "cp .travis.settings.xml $HOME/.m2/settings.xml && mvn clean deploy"
-  skip_cleanup: true
-  on:
-    tags: true
+script: "cp .travis.settings.xml $HOME/.m2/settings.xml && mvn clean deploy"
